@@ -58,4 +58,38 @@ var longestPalindrome = function(s) {
     
 // }
 
-console.log(longestPalindrome('aba'));
+// 3. 中心扩散法（由回文串的特征决定）
+
+var longestPalindrome = function(s) {
+    if (s.length <= 1) { return s; } // 处理特殊情况
+    const arr = s.split('');
+    let maxStart = 0;
+    let maxLength = 0;
+    var check = (left, right) => {
+        if (left < 0) return false;
+        if (right >= arr.length) return false;
+        return s[left] === s[right];
+    }
+    var spread = (left, right) => {
+        // 找到从left，right扩散的最大扩散范围
+        while(check(left, right)) {
+            left -= 1;
+            right += 1;
+        }
+        return { length: (right - 1) - (left + 1) + 1, start: left + 1  };
+    }
+    arr.forEach((char, i) => {
+        // 两种扩散 i-1, i+1 or i, i+1
+        const spread1 = spread(i-1, i+1);
+        const spread2 = spread(i, i+1);
+        const maxResult = spread1.length > spread2.length ? spread1 : spread2;
+        if (maxResult.length > maxLength) {
+            maxLength = maxResult.length;
+            maxStart = maxResult.start;
+        }
+    });
+    return s.substring(maxStart,maxStart+maxLength);
+    
+}
+
+console.log(longestPalindrome('ada'));
