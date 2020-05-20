@@ -3,6 +3,8 @@
  * @param {number} numRows
  * @return {string}
  */
+
+// 1. 转化成二维数组
 var convert = function(s, numRows) {
     // 处理特殊情况
     if (numRows < 2) return s;
