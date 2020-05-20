@@ -49,7 +49,68 @@ var myAtoi = function(str) {
 
 // 2. 高冷的自动机算法
 var myAtoi = function(str) {
-    
+    const length = str.length;
+    let status = 'start'; // start - sign - in_number - end
+    const r = [];
+    // 计算
+    const max = Math.pow(2, 31) - 1;
+    const min = - (max + 1);
+    const end = () => {
+        const compute = (arr, isNegative) => {
+            let pow = isNegative ? -1 : 1;
+            let sum = 0;
+            for (let i=arr.length - 1; i>=0; i--) {
+                sum += arr[i] * pow;
+                if (sum > max) { return max; }
+                if (sum < min) { return min; }
+                pow = pow * 10;
+            }
+            return sum;
+        };
+        if (r[0] === '-') {
+            return compute(r.slice(1), true);
+        } else if (r[0] === '+') {
+            return compute(r.slice(1), false);
+        } else {
+            return compute(r, false);
+        }
+    }
+
+    // 状态转换核心
+    for(let i=0; i<length; i++) {
+        const char = str[i];
+        switch (status) {
+            case 'start':
+                if (char === '+' || char === '-') {
+                    status = 'sign';
+                    r.push(char);
+                } else if (/[0-9]/.test(char)) {
+                    status = 'in_number';
+                    r.push(char);
+                } else if (char !== ' ') {
+                    return 0;
+                }
+                break;
+            case 'sign':
+                if (/[0-9]/.test(char)) {
+                    status = 'in_number';
+                    r.push(char);
+                } else {
+                    return end();
+                }
+                break;
+            case 'in_number':
+                if (/[0-9]/.test(char)) {
+                    r.push(char);
+                } else {
+                    return end();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return end();
 }
 
-console.log(myAtoi("  +  413"));
+console.log(myAtoi("42"));
